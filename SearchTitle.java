@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-class Titlefor extends Search {
+public class SearchTitle extends Search {
     @Override
     protected void search(String title, int userid) {
         try {
