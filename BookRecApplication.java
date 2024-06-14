@@ -80,18 +80,25 @@ public class BookRecApplication {
 
             // 検索結果の取得と表示
             rs = null;
+            String searchWord;
             switch (searchMethod) {
                 case 1:
                     System.out.println("Enter search word");
-                    String searchWord = scanner.nextLine();
+                    searchWord = scanner.nextLine();
                     SearchTitle searchTitle = new SearchTitle(conn);
                     searchTitle.searchMethod(searchWord, userID);
                     break;
                 case 2:
-                    // キーワード検索の実装
+                    System.out.println("Enter search word");
+                    searchWord = scanner.nextLine();
+                    SearchKey searchKey = new SearchKey(conn);
+                    searchKey.searchMethod(searchWord, userID);
                     break;
                 case 3:
-                    // タグ検索の実装
+                    System.out.println("Enter search word");
+                    searchWord = scanner.nextLine();
+                    SearchTag searchTag = new SearchTag(conn);
+                    searchTag.searchMethod(searchWord, userID);
                     break;
                 default:
                     System.out.println("Invalid search method.");

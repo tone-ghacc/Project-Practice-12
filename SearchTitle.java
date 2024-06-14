@@ -1,27 +1,27 @@
 import java.sql.*;
 
 public class SearchTitle extends Search {
-    private Connection connect = null;
+    private Connection conn = null;
 
     public SearchTitle(Connection newConn) {
-        connect = newConn;
+        conn = newConn;
     }
 
     @Override
     protected void search(String titlePart, int id) {
+        String sql = "SELECT p.publicationID, s.series, pu.name, a.name " +
+                "FROM publication p " +
+                "JOIN story s ON p.publicationID = s.publicationID " +
+                "JOIN writing w ON p.publicationID = w.publicationID " +
+                "JOIN author a ON w.authorID = a.ID " +
+                "JOIN publishing pb ON p.ISBNnumber = pb.ISBNnumber " +
+                "JOIN publisher pu ON pb.publisherID = pu.ID " +
+                "WHERE s.series LIKE ?";
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT p.publicationID, s.series, pu.name, a.name " +
-                    "FROM publication p " +
-                    "JOIN story s ON p.publicationID = s.publicationID " +
-                    "JOIN writing w ON p.publicationID = w.publicationID " +
-                    "JOIN author a ON w.authorID = a.ID " +
-                    "JOIN publishing pb ON p.ISBNnumber = pb.ISBNnumber " +
-                    "JOIN publisher pu ON pb.publisherID = pu.ID " +
-                    "WHERE s.series LIKE ?";
 
-            pstmt = connect.prepareStatement(sql);
+            pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, "%" + titlePart + "%");
             rs = pstmt.executeQuery();
 
