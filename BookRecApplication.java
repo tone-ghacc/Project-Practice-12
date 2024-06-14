@@ -110,8 +110,10 @@ public class BookRecApplication {
 
             // readingの情報の確認と表示
             // SQLクエリの実行
-            pstmt = conn.prepareStatement("SELECT have, impression, date FROM reading WHERE publicationID = ?");
+            pstmt = conn.prepareStatement(
+                    "SELECT have, impression, date FROM reading WHERE publicationID = ? AND userID = ?");
             pstmt.setInt(1, publicationID);
+            pstmt.setInt(2, userID);
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
@@ -122,13 +124,53 @@ public class BookRecApplication {
                 System.out.println("Have: " + have);
                 System.out.println("Impression: " + impression);
                 System.out.println("Date: " + date);
+
+                // 情報を上書きするかたずねる
+                System.out.print("Do you want to update the information? (yes/no): ");
+                String answer = scanner.next();
+                if ("yes".equalsIgnoreCase(answer)) {
+                    // 感想の更新
+                    System.out.print("Enter your new impression: ");
+                    scanner.nextLine(); // 改行文字を消費
+                    String newImpression = scanner.nextLine();
+                    System.out.print("Do you have the book? (true/false): ");
+                    boolean newHave = scanner.nextBoolean();
+
+                    // 更新クエリの実行
+                    pstmt = conn.prepareStatement(
+                            "UPDATE reading SET impression = ?, have = ?, date = CURRENT_DATE WHERE publicationID = ? AND userID = ?");
+                    pstmt.setString(1, newImpression);
+                    pstmt.setBoolean(2, newHave);
+                    pstmt.setInt(3, publicationID);
+                    pstmt.setInt(4, userID);
+                    pstmt.executeUpdate();
+                    System.out.println("Information updated successfully.");
+                }
             } else {
                 // 登録されていない場合
                 System.out.println("No information available.");
-            }
+                // 登録を促す
+                System.out.print("Do you want to register your impression? (yes/no): ");
+                String answer = scanner.next();
+                if ("yes".equalsIgnoreCase(answer)) {
+                    // 感想の登録
+                    System.out.print("Enter your impression: ");
+                    scanner.nextLine(); // 改行文字を消費
+                    String impression = scanner.nextLine();
+                    System.out.print("Do you have the book? (true/false): ");
+                    boolean have = scanner.nextBoolean();
 
-            // システムの終了
-            System.out.println("Exiting the system...");
+                    // 登録クエリの実行
+                    pstmt = conn.prepareStatement(
+                            "INSERT INTO reading (userID, publicationID, have, impression, date) VALUES (?, ?, ?, ?, CURRENT_DATE)");
+                    pstmt.setInt(1, userID);
+                    pstmt.setInt(2, publicationID);
+                    pstmt.setBoolean(3, have);
+                    pstmt.setString(4, impression);
+                    pstmt.executeUpdate();
+                    System.out.println("Information registered successfully.");
+                }
+            }
 
         } catch (SQLException se) {
             // JDBCのエラー処理
